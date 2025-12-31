@@ -1,17 +1,16 @@
-// Fix: Import React to resolve 'React' namespace error for ElementType
+
 import React from 'react';
 
-export interface LinkItem {
+export interface RewardLink {
   id: string;
-  title: string;
-  subtitle: string;
-  timeLabel: string;
-  type: 'spin' | 'coin';
-  url: string;
+  amount: string;
+  type: 'spin' | 'coin' | 'multi';
+  dateLabel: string; // 'Today', '7 September', etc.
+  timestamp: number;
+  rewardId: string;
+  isNew?: boolean;
 }
 
-export interface NavItem {
-  id: string;
-  icon: React.ElementType;
-  path: string;
+export interface ClaimState {
+  [id: string]: boolean;
 }

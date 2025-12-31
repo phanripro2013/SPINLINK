@@ -16,7 +16,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
            </svg>
         </div>
         <div className="flex flex-col">
-          <span className="font-extrabold text-xl tracking-tighter text-slate-800 leading-none">VŨ.SYM</span>
+          <span className="font-extrabold text-lg tracking-tighter text-slate-800 leading-none">TW VŨ SPIN</span>
+          <span className="text-[10px] font-bold text-blue-600 uppercase">CoinsMaster</span>
         </div>
       </div>
 

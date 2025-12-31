@@ -2,12 +2,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, RefreshCw, Coins, Zap } from 'lucide-react';
-import { SPIN_LINKS, COIN_LINKS } from '../constants';
-import { LinkItem } from '../types';
+import { REWARD_LINKS } from '../constants';
+import { RewardLink } from '../types';
 
 const LinksPage: React.FC<{ type: 'spin' | 'coin' }> = ({ type }) => {
   const navigate = useNavigate();
-  const links = type === 'spin' ? SPIN_LINKS : COIN_LINKS;
+  const links = REWARD_LINKS.filter(link => link.type === type);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -28,7 +28,7 @@ const LinksPage: React.FC<{ type: 'spin' | 'coin' }> = ({ type }) => {
         <div className="flex flex-col items-end">
            <div className="flex items-center gap-2 font-black text-slate-800 italic">
               {type === 'spin' ? <RefreshCw size={18} className="text-blue-600" /> : <Coins size={18} className="text-amber-500" />}
-              NHẬN {type === 'spin' ? 'SPIN' : 'VÀNG'}
+              NHẬN {type === 'spin' ? 'VÒNG QUAY' : 'VÀNG'}
            </div>
            <span className="text-[10px] font-bold text-blue-600 tracking-wider">ĐÃ CẬP NHẬT LINK</span>
         </div>
@@ -57,9 +57,10 @@ const LinksPage: React.FC<{ type: 'spin' | 'coin' }> = ({ type }) => {
   );
 };
 
-const LinkCard: React.FC<{ link: LinkItem }> = ({ link }) => {
+const LinkCard: React.FC<{ link: RewardLink }> = ({ link }) => {
   const handleClaim = () => {
-    window.open(link.url, '_blank');
+    const deepLink = `https://vik-game.moonactive.net/external/openReward?rewardId=${link.rewardId}`;
+    window.open(deepLink, '_blank');
   };
 
   return (
@@ -69,8 +70,8 @@ const LinkCard: React.FC<{ link: LinkItem }> = ({ link }) => {
       </div>
       
       <div className="ml-4 flex-1">
-        <h4 className="font-extrabold text-slate-800 text-[15px] leading-tight">{link.title}</h4>
-        <p className="text-[10px] font-black text-slate-400 tracking-wider uppercase mt-0.5">{link.subtitle}</p>
+        <h4 className="font-extrabold text-slate-800 text-[15px] leading-tight">{link.amount}</h4>
+        <p className="text-[10px] font-black text-slate-400 tracking-wider uppercase mt-0.5">{link.dateLabel}</p>
       </div>
 
       <button 
@@ -80,7 +81,7 @@ const LinkCard: React.FC<{ link: LinkItem }> = ({ link }) => {
           ${link.type === 'spin' ? 'bg-blue-600 text-white shadow-lg shadow-blue-200' : 'bg-amber-500 text-white shadow-lg shadow-amber-200'}
         `}
       >
-        LẤY
+        LẤY NGAY
       </button>
     </div>
   );

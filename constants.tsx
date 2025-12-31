@@ -1,18 +1,47 @@
 
-import { LinkItem } from './types';
+import { RewardLink } from './types';
 
-export const SPIN_LINKS: LinkItem[] = [
-  { id: '1', title: '50 Free Spins', subtitle: 'MỚI NHẤT', timeLabel: 'Mới nhất', type: 'spin', url: '#' },
-  { id: '2', title: '25 Free Spins', subtitle: '2 GIỜ TRƯỚC', timeLabel: '2 giờ trước', type: 'spin', url: '#' },
-  { id: '3', title: '25 Free Spins', subtitle: '3 GIỜ TRƯỚC', timeLabel: '3 giờ trước', type: 'spin', url: '#' },
-  { id: '4', title: '50 Free Spins', subtitle: '4 GIỜ TRƯỚC', timeLabel: '4 giờ trước', type: 'spin', url: '#' },
-  { id: '5', title: '25 Free Spins', subtitle: '5 GIỜ TRƯỚC', timeLabel: '5 giờ trước', type: 'spin', url: '#' },
-];
+// Hàm hỗ trợ tạo link giả lập để đảm bảo số lượng ~100
+const generateLinks = (): RewardLink[] => {
+  const links: RewardLink[] = [];
+  const now = Date.now();
+  const dayInMs = 86400000;
 
-export const COIN_LINKS: LinkItem[] = [
-  { id: 'c1', title: '2 Million Coins', subtitle: 'MỚI NHẤT', timeLabel: 'Mới nhất', type: 'coin', url: '#' },
-  { id: 'c2', title: '4 Million Coins', subtitle: '2 GIỜ TRƯỚC', timeLabel: '2 giờ trước', type: 'coin', url: '#' },
-  { id: 'c3', title: '6 Million Coins', subtitle: '3 GIỜ TRƯỚC', timeLabel: '3 giờ trước', type: 'coin', url: '#' },
-  { id: 'c4', title: '8 Million Coins', subtitle: '4 GIỜ TRƯỚC', timeLabel: '4 giờ trước', type: 'coin', url: '#' },
-  { id: 'c5', title: '10 Million Coins', subtitle: '5 GIỜ TRƯỚC', timeLabel: '5 giờ trước', type: 'coin', url: '#' },
-];
+  // Cấu hình các loại phần thưởng
+  const rewards = [
+    { amount: '25 Vòng quay', type: 'spin' as const },
+    { amount: '50 Vòng quay', type: 'spin' as const },
+    { amount: '100 Vòng quay', type: 'spin' as const },
+    { amount: '2 Triệu Xu', type: 'coin' as const },
+    { amount: '5 Triệu Xu', type: 'coin' as const },
+    { amount: '10 Triệu Xu', type: 'coin' as const },
+    { amount: '25 Vòng quay & 1M Xu', type: 'multi' as const },
+  ];
+
+  // Tạo dữ liệu cho 10 ngày gần nhất
+  for (let d = 0; d < 10; d++) {
+    const date = new Date(now - d * dayInMs);
+    const dateLabel = d === 0 ? 'Hôm nay' : 
+                     d === 1 ? 'Hôm qua' : 
+                     `Ngày ${date.getDate()} Tháng ${date.getMonth() + 1}`;
+    
+    // Mỗi ngày tạo khoảng 10 link
+    for (let i = 0; i < 10; i++) {
+      const reward = rewards[Math.floor(Math.random() * rewards.length)];
+      const id = `link-${d}-${i}`;
+      links.push({
+        id,
+        amount: reward.amount,
+        type: reward.type,
+        dateLabel,
+        timestamp: now - (d * dayInMs) - (i * 3600000),
+        rewardId: `CM_REWARD_${d}_${i}_${Math.random().toString(36).substring(7).toUpperCase()}`,
+        isNew: d === 0 // Chỉ đánh dấu "Mới" cho ngày hôm nay
+      });
+    }
+  }
+
+  return links;
+};
+
+export const REWARD_LINKS: RewardLink[] = generateLinks();
