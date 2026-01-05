@@ -1,25 +1,27 @@
+
 {
-  "name": "tw-vũ-spin-coinsmaster",
-  "private": true,
-  "version": "0.0.0",
-  "type": "module",
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
+  "name": "tw-vu-spin-coinsmaster",
+  "version": "1.0.0",
+  "description": "Ứng dụng nhận vòng quay và xu miễn phí hàng ngày cho Coin Master",
+  "main": "index.tsx",
   "dependencies": {
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
-    "react-router-dom": "7.11.0",
-    "lucide-react": "0.562.0",
-    "clsx": "2.1.1",
-    "tailwind-merge": "2.3.0"
+    "react-router-dom": "^7.11.0",
+    "lucide-react": "^0.446.0",
+    "clsx": "^2.1.1",
+    "tailwind-merge": "^2.3.0"
   },
   "devDependencies": {
-    "@types/node": "^22.14.0",
-    "@vitejs/plugin-react": "^5.0.0",
-    "typescript": "~5.8.2",
-    "vite": "^6.2.0"
-  }
+    "typescript": "^5.0.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0"
+  },
+  "keywords": [
+    "coin-master",
+    "spin-link",
+    "daily-rewards",
+    "tony-hoai-vu"
+  ],
+  "author": "Tony Hoai Vu"
 }
