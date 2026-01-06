@@ -1,8 +1,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import { REWARD_LINKS } from '../constants';
-import { RefreshCw, Coins, Zap, Share2, Loader2, CheckCircle2 } from 'lucide-react';
-// Import RewardLink type for explicit typing to resolve TS inference issues
+import { RefreshCw, Coins, Zap, Share2, Loader2, CheckCircle2, Cloud, AlertCircle } from 'lucide-react';
 import { RewardLink } from '../types';
 
 interface HomeProps {
@@ -15,22 +14,22 @@ const Home: React.FC<HomeProps> = ({ claimedIds, onClaim }) => {
   const [lastUpdate, setLastUpdate] = useState('');
   const [showUpdateToast, setShowUpdateToast] = useState(false);
 
-  useEffect(() => {
-    // Hiệu ứng khởi động và "tải link"
-    const timer = setTimeout(() => {
+  const refreshData = () => {
+    setIsUpdating(true);
+    setTimeout(() => {
       setIsUpdating(false);
       const now = new Date();
       setLastUpdate(`${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`);
-      
-      // Hiển thị thông báo đã cập nhật thành công
       setShowUpdateToast(true);
       setTimeout(() => setShowUpdateToast(false), 3000);
-    }, 2000);
-    return () => clearTimeout(timer);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 1500);
+  };
+
+  useEffect(() => {
+    refreshData();
   }, []);
 
-  // Memoize việc nhóm để tối ưu hiệu năng cho danh sách lớn
-  // Fix: Explicitly type the accumulator as Record<string, RewardLink[]> to ensure 'items' in map is correctly inferred
   const groups = useMemo(() => {
     return REWARD_LINKS.reduce((acc, link) => {
       if (!acc[link.dateLabel]) acc[link.dateLabel] = [];
@@ -55,13 +54,21 @@ const Home: React.FC<HomeProps> = ({ claimedIds, onClaim }) => {
   };
 
   return (
-    <div className="flex flex-col relative min-h-screen">
+    <div className="flex flex-col relative min-h-screen overflow-hidden">
+      {/* Background clouds */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden h-full z-0">
+        <Cloud className="cloud text-slate-100" size={64} style={{ top: '15%', animationDuration: '40s', animationDelay: '0s' }} />
+        <Cloud className="cloud text-slate-100" size={48} style={{ top: '40%', animationDuration: '35s', animationDelay: '-10s' }} />
+        <Cloud className="cloud text-slate-100" size={80} style={{ top: '65%', animationDuration: '50s', animationDelay: '-25s' }} />
+        <Cloud className="cloud text-slate-100" size={56} style={{ top: '85%', animationDuration: '45s', animationDelay: '-5s' }} />
+      </div>
+
       {/* Toast Notification */}
       {showUpdateToast && (
         <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] animate-bounce">
           <div className="bg-emerald-500 text-white px-4 py-2 rounded-full shadow-xl flex items-center gap-2 text-xs font-bold border border-emerald-400">
             <CheckCircle2 size={14} />
-            Hệ thống TW Vũ đã cập nhật 100+ link mới!
+            Hệ thống TW Vũ đã cập nhật link mới!
           </div>
         </div>
       )}
@@ -75,12 +82,17 @@ const Home: React.FC<HomeProps> = ({ claimedIds, onClaim }) => {
              </div>
              <div>
                 <h1 className="text-xl font-black italic tracking-tighter">TW VŨ SPIN</h1>
-                <p className="text-[10px] font-bold opacity-80 uppercase tracking-widest">Hệ thống 100+ Link Daily</p>
+                <p className="text-[10px] font-bold opacity-80 uppercase tracking-widest">100+ Link Daily</p>
              </div>
           </div>
-          <button onClick={handleShare} title="Chia sẻ ứng dụng" className="p-3 bg-white/20 rounded-2xl backdrop-blur-md active:scale-90 transition-all">
-            <Share2 size={20} />
-          </button>
+          <div className="flex gap-2">
+            <button onClick={refreshData} title="Làm mới" className="p-3 bg-white/20 rounded-2xl backdrop-blur-md active:scale-90 transition-all">
+              <RefreshCw size={20} className={isUpdating ? 'animate-spin' : ''} />
+            </button>
+            <button onClick={handleShare} title="Chia sẻ" className="p-3 bg-white/20 rounded-2xl backdrop-blur-md active:scale-90 transition-all">
+              <Share2 size={20} />
+            </button>
+          </div>
         </div>
         
         <div className="bg-white/10 p-4 rounded-3xl backdrop-blur-sm border border-white/10 flex items-center justify-between">
@@ -91,7 +103,7 @@ const Home: React.FC<HomeProps> = ({ claimedIds, onClaim }) => {
               <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
             )}
             <p className="text-xs font-medium">
-              {isUpdating ? 'Đang quét link từ Database TW Vũ...' : `Tự động cập nhật: ${lastUpdate}`}
+              {isUpdating ? 'Đang quét link từ Database...' : `Cập nhật: ${lastUpdate}`}
             </p>
           </div>
           {!isUpdating && (
@@ -103,77 +115,90 @@ const Home: React.FC<HomeProps> = ({ claimedIds, onClaim }) => {
       </div>
 
       {/* Reward List */}
-      <div className="px-4 -mt-6 space-y-8 pb-32">
+      <div className="px-4 -mt-6 space-y-8 pb-10 relative z-10">
         {isUpdating ? (
           <div className="space-y-4 pt-10">
              {[1,2,3,4,5,6].map(i => (
-               <div key={i} className="h-24 bg-white rounded-[1.8rem] animate-pulse border border-slate-100"></div>
+               <div key={i} className="h-24 bg-white/80 backdrop-blur-sm rounded-[1.8rem] animate-pulse border border-slate-100"></div>
              ))}
           </div>
         ) : (
-          Object.entries(groups).map(([date, items]) => (
-            <div key={date} className="space-y-4">
-              <div className="flex items-center gap-3 px-2 sticky top-[140px] z-30 py-2 bg-slate-50/80 backdrop-blur-sm rounded-xl">
-                 <div className="h-[2px] flex-1 bg-slate-200"></div>
-                 <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest bg-white px-3 py-1 rounded-full shadow-sm border border-slate-100">
-                   {date}
-                 </span>
-                 <div className="h-[2px] flex-1 bg-slate-200"></div>
-              </div>
+          <>
+            {Object.entries(groups).map(([date, items]) => (
+              <div key={date} className="space-y-4">
+                <div className="flex items-center gap-3 px-2 sticky top-[140px] z-30 py-2 bg-slate-50/80 backdrop-blur-sm rounded-xl">
+                   <div className="h-[2px] flex-1 bg-slate-200"></div>
+                   <span className="text-[11px] font-black text-slate-500 uppercase tracking-widest bg-white px-3 py-1 rounded-full shadow-sm border border-slate-100">
+                     {date}
+                   </span>
+                   <div className="h-[2px] flex-1 bg-slate-200"></div>
+                </div>
 
-              <div className="grid grid-cols-1 gap-3">
-                {items.map((link) => (
-                  <div 
-                    key={link.id}
-                    className={`
-                      flex items-center p-4 bg-white rounded-[1.8rem] shadow-sm border border-slate-100 transition-all
-                      ${claimedIds[link.id] ? 'claimed-item' : 'hover:border-purple-200 active:scale-[0.98]'}
-                    `}
-                  >
-                    <div className={`p-4 rounded-2xl ${
-                      link.type === 'coin' ? 'bg-amber-100 text-amber-600' : 
-                      link.type === 'multi' ? 'bg-emerald-100 text-emerald-600' :
-                      'bg-purple-100 text-purple-600'
-                    }`}>
-                      {link.type === 'coin' ? <Coins size={24} /> : <RefreshCw size={24} />}
-                    </div>
-
-                    <div className="ml-4 flex-1">
-                      <div className="flex items-center gap-2">
-                        <h4 className="font-bold text-slate-800 text-base">{link.amount}</h4>
-                        {link.isNew && !claimedIds[link.id] && (
-                          <span className="bg-red-500 text-white text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-tighter shadow-sm animate-pulse">New</span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-1 mt-0.5">
-                        <Zap size={10} className="text-yellow-500 fill-current" />
-                        <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tight">Hệ thống TW Vũ</p>
-                      </div>
-                    </div>
-
-                    <button 
-                      disabled={claimedIds[link.id]}
-                      onClick={() => onClaim(link.id, link.rewardId)}
+                <div className="grid grid-cols-1 gap-3">
+                  {/* Fix: Explicitly cast items to RewardLink[] to resolve 'Property map does not exist on type unknown' */}
+                  {(items as RewardLink[]).map((link) => (
+                    <div 
+                      key={link.id}
                       className={`
-                        px-5 py-2.5 rounded-2xl font-black text-[10px] uppercase tracking-wider shadow-md transition-all
-                        ${claimedIds[link.id] 
-                          ? 'bg-slate-100 text-slate-400 shadow-none' 
-                          : 'bg-yellow-400 text-purple-900 shadow-yellow-100 hover:bg-yellow-500 active:bg-yellow-600'}
+                        flex items-center p-4 bg-white/90 backdrop-blur-sm rounded-[1.8rem] shadow-sm border border-slate-100 transition-all
+                        ${claimedIds[link.id] ? 'claimed-item' : 'hover:border-purple-200 active:scale-[0.98]'}
                       `}
                     >
-                      {claimedIds[link.id] ? 'Xong' : 'Nhận'}
-                    </button>
-                  </div>
-                ))}
+                      <div className={`p-4 rounded-2xl ${
+                        link.type === 'coin' ? 'bg-amber-100 text-amber-600' : 
+                        link.type === 'multi' ? 'bg-emerald-100 text-emerald-600' :
+                        'bg-purple-100 text-purple-600'
+                      }`}>
+                        {link.type === 'coin' ? <Coins size={24} /> : <RefreshCw size={24} />}
+                      </div>
+
+                      <div className="ml-4 flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-bold text-slate-800 text-base">{link.amount}</h4>
+                          {link.isNew && !claimedIds[link.id] && (
+                            <span className="bg-red-500 text-white text-[8px] px-1.5 py-0.5 rounded-full font-black uppercase tracking-tighter shadow-sm animate-pulse">New</span>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1 mt-0.5">
+                          <Zap size={10} className="text-yellow-500 fill-current" />
+                          <p className="text-[9px] text-slate-400 font-bold uppercase tracking-tight">Xác minh bởi TW Vũ</p>
+                        </div>
+                      </div>
+
+                      <button 
+                        disabled={claimedIds[link.id]}
+                        onClick={() => onClaim(link.id, link.rewardId)}
+                        className={`
+                          px-5 py-2.5 rounded-2xl font-black text-[10px] uppercase tracking-wider shadow-md transition-all
+                          ${claimedIds[link.id] 
+                            ? 'bg-slate-100 text-slate-400 shadow-none' 
+                            : 'bg-yellow-400 text-purple-900 shadow-yellow-100 hover:bg-yellow-500 active:bg-yellow-600'}
+                        `}
+                      >
+                        {claimedIds[link.id] ? 'Xong' : 'Nhận'}
+                      </button>
+                    </div>
+                  ))}
+                </div>
               </div>
+            ))}
+            
+            {/* Disclaimer / Legal Notice */}
+            <div className="mt-12 mb-20 p-6 bg-slate-100/50 rounded-[2.5rem] border border-slate-200 flex flex-col items-center gap-3">
+              <AlertCircle className="text-slate-400" size={24} />
+              <p className="text-[10px] text-slate-500 font-medium text-center leading-relaxed italic">
+                <b>THÔNG BÁO PHÁP LÝ:</b> Ứng dụng này là một fan-app được phát triển bởi TW Vũ. Chúng tôi không liên kết, tài trợ hoặc được phê duyệt bởi Moon Active (nhà phát triển Coin Master). Tất cả các link quà tặng đều được tổng hợp từ các nguồn công khai chính thức của trò chơi.
+              </p>
+              <div className="h-[1px] w-12 bg-slate-300"></div>
+              <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">© 2024 TW VŨ DIGITAL</p>
             </div>
-          ))
+          </>
         )}
       </div>
 
       {/* Stats Footer */}
       {!isUpdating && (
-        <div className="fixed bottom-24 left-0 w-full px-4 pointer-events-none">
+        <div className="fixed bottom-24 left-0 w-full px-4 pointer-events-none z-50">
            <div className="max-w-lg mx-auto bg-slate-800/80 backdrop-blur-md text-white/70 text-[9px] py-1 px-4 rounded-full text-center font-bold uppercase tracking-widest border border-white/10 shadow-lg">
              Đang hiển thị {REWARD_LINKS.length} link quà tặng khả dụng
            </div>

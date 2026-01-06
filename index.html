@@ -3,7 +3,7 @@
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>TW Vũ Spin CoinsMaster – Vòng Quay & Xu Miễn Phí</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
@@ -13,6 +13,7 @@
         background-color: #f3f4f6;
         user-select: none;
         -webkit-tap-highlight-color: transparent;
+        overflow-x: hidden;
       }
       .app-container {
         max-width: 500px;
@@ -20,6 +21,8 @@
         min-height: 100vh;
         background: #ffffff;
         box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        position: relative;
+        overflow-x: hidden;
       }
       .gradient-purple {
         background: linear-gradient(180deg, #6d28d9 0%, #4c1d95 100%);
@@ -27,6 +30,19 @@
       .claimed-item {
         opacity: 0.6;
         filter: grayscale(1);
+      }
+      
+      /* Animation cho đám mây */
+      .cloud {
+        position: absolute;
+        opacity: 0.4;
+        pointer-events: none;
+        z-index: 0;
+        animation: float-cloud linear infinite;
+      }
+      @keyframes float-cloud {
+        from { transform: translateX(-100px); }
+        to { transform: translateX(600px); }
       }
     </style>
     <script type="importmap">
